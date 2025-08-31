@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyDamnLifeAsAHumanBeing</title>
+    <style>
+        :root {
+            --main-color: #6c5ce7;
+            --bg-color: rgba(255, 255, 255, 0.001); /* 降低不透明度 */
+            --text-color: #2d3436;
+            --card-bg: rgba(255, 255, 255, 0.001); /* 降低不透明度 */
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --slogan-color: rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: var(--text-color);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 背景标语 */
+        .background-slogan {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 8vw;
+            font-weight: 900;
+            opacity: 0.18; /* 提高标语可见度 */
+            color: var(--slogan-color, #000);
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: -1;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--bg-color);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-stick-man {
+            width: 60px;
+            height: 90px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .header-stick-man.left {
+            margin-right: 20px;
+        }
+
+        .header-stick-man.right {
+            margin-left: 20px;
+        }
+
+        .header-content {
+            flex-grow: 1;
+        }
+
+        h1 {
+            color: var(--main-color);
+            margin-bottom: 5px;
+            font-size: 2.2em;
+        }
+
+        .time-display {
+            font-size: 1.5em;
+            color: #636e72;
+            margin-bottom: 10px;
+        }
+
+        .date-display {
+            font-size: 1.1em;
+            color: #636e72;
+        }
+
+        .control-panel {
+            background: var(--bg-color);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            /* 底部渐隐效果 */
+            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+        }
+
+        .input-area {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+            align-items: center;
+        }
+
+        input, select, button, textarea {
+            padding: 14px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--main-color);
+            outline: none;
+        }
+
+        input {
+            flex-grow: 1;
+            background: var(--card-bg);
+        }
+
+        button {
+            background: var(--main-color);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        #colorPicker {
+            width: 60px;
+            height: 45px;
+            padding: 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .content-area {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            position: relative;
+            min-height: 500px;
+        }
+
+        .category, .plan-list {
+            background: var(--bg-color);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            min-width: 300px;
+            flex: 1;
+            backdrop-filter: blur(10px);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .category {
+            min-height: 400px;
+        }
+
+        .category-header {
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--main-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .plan-item {
+            background: var(--card-bg);
+            padding: 18px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            border-left: 4px solid var(--main-color);
+        }
+
+        .plan-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .plan-text {
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding-right: 30px;
+        }
+
+        .plan-note {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .plan-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .delete-btn, .move-btn, .complete-btn {
+            background: #ff7675;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .move-btn {
+            background: #74b9ff;
+        }
+
+        .complete-btn {
+            background: #00b894;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .complete-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .delete-category {
+            background: #ff7675;
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        /* 中间搞怪小人 */
+        .stick-man-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .stick-man {
+            width: 80px;
+            height: 120px;
+            position: relative;
+        }
+
+        /* 通用小人部件 */
+        .head {
+            width: 40px;
+            height: 40px;
+            background-color: #2d3436;
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .eye {
+            width: 8px;
+            height: 8px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 15px;
+        }
+
+        .eye.left {
+            left: 10px;
+        }
+
+        .eye.right {
+            right: 10px;
+        }
+
+        .mouth {
+            width: 15px;
+            height: 5px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .body {
+            width: 6px;
+            height: 50px;
+            background-color: #2d3436;
+            margin: 0 auto;
+        }
+
+        .arms, .legs {
+            display: flex;
+            justify-content: space-around;
+            width: 60px;
+            margin: 0 auto;
+        }
+
+        .arm, .leg {
+            width: 5px;
+            height: 30px;
+            background-color: #2d3436;
+        }
+
+        /* 中间小人样式 */
+        .center-stick-man .head {
+            background-color: #6c5ce7;
+        }
+
+        .center-stick-man .body,
+        .center-stick-man .arm,
+        .center-stick-man .leg {
+            background-color: #6c5ce7;
+        }
+
+        /* 左侧小人样式 */
+        .left-stick-man .head {
+            background-color: #e84393;
+        }
+
+        .left-stick-man .body,
+        .left-stick-man .arm,
+        .left-stick-man .leg {
+            background-color: #e84393;
+        }
+
+        /* 右侧小人样式 */
+        .right-stick-man .head {
+            background-color: #00b894;
+        }
+
+        .right-stick-man .body,
+        .right-stick-man .arm,
+        .right-stick-man .leg {
+            background-color: #00b894;
+        }
+
+        /* 动画 */
+        @keyframes jump {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            40% { transform: translateY(-30px) rotate(-2deg); }
+            60% { transform: translateY(-15px) rotate(2deg); }
+        }
+
+        @keyframes blink {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.1); }
+        }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        .stick-man {
+            animation: jump 3s ease-in-out infinite;
+        }
+
+        .header-stick-man {
+            animation: sway 4s ease-in-out infinite;
+        }
+
+        .eye {
+            animation: blink 3s ease-in-out infinite;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .content-area {
+                flex-direction: column;
+            }
+            
+            .input-area {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .theme-selector {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .background-slogan {
+                font-size: 15vw;
+            }
+            
+            .stick-man-container {
+                display: none;
+            }
+            
+            .header-stick-man {
+                display: none;
+            }
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--main-color);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(108, 92, 231, 0.8);
+        }
+
+        /* 完成计划的效果 */
+        .completed {
+            opacity: 0.7;
+            background: rgba(0, 184, 148, 0.1);
+            border-left: 4px solid #00b894;
+        }
+
+        .completed .plan-text {
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景标语 -->
+    <div class="background-slogan" id="backgroundSlogan">高效工作</div>
+
+    <div class="container">
+        <header>
+            <!-- 左侧小人 -->
+            <div class="header-stick-man left">
+                <div class="head left-stick-man">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div class="mouth"></div>
+                </div>
+                <div class="body left-stick-man"></div>
+                <div class="arms">
+                    <div class="arm left-stick-man"></div>
+                    <div class="arm left-stick-man"></div>
+                </div>
+                <div class="legs">
+                    <div class="leg left-stick-man"></div>
+                    <div class="leg left-stick-man"></div>
+                </div>
+            </div>
+            
+            <div class="header-content">
+                <h1 id="greeting">早上好，旅行者</h1>
+                <div class="time-display" id="timeDisplay">00:00:00</div>
+                <div class="date-display" id="dateDisplay">2023年1月1日 星期一</div>
+            </div>
+            
+            <!-- 右侧小人 -->
+            <div class="header-stick-man right">
+                <div class="head right-stick-man">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div class="mouth"></div>
+                </div>
+                <div class="body right-stick-man"></div>
+                <div class="arms">
+                    <div class="arm right-stick-man"></div>
+                    <div class="arm right-stick-man"></div>
+                </div>
+                <div class="legs">
+                    <div class="leg right-stick-man"></div>
+                    <div class="leg right-stick-man"></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="control-panel">
+            <div class="input-area">
+                <input type="text" id="newPlan" placeholder="写下你的新计划...">
+                <button onclick="addPlan()">添加计划</button>
+            </div>
+            
+            <div class="input-area">
+                <input type="text" id="newCategory" placeholder="输入新分类名称...">
+                <button onclick="addCategory()">创建分类</button>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="sloganText" placeholder="输入背景标语..." value="高效工作">
+                <input type="color" id="sloganColor" value="#000000">
+                <input type="range" id="sloganSize" min="20" max="200" value="80">
+                <button onclick="updateSlogan()">更新标语</button>
+            </div>
+
+            <div class="theme-selector">
+                <label>选择主题色：</label>
+                <input type="color" id="colorPicker" value="#6c5ce7">
+                <button onclick="applyTheme()">应用主题</button>
+                
+                <label>用户名：</label>
+                <input type="text" id="userName" placeholder="输入你的名字" value="旅行者">
+                <button onclick="updateUserName()">更新名字</button>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <!-- 中间搞怪小人 -->
+            <div class="stick-man-container">
+                <div class="stick-man center-stick-man">
+                    <div class="head">
+                        <div class="eye left"></div>
+                        <div class="eye right"></div>
+                        <div class="mouth"></div>
+                    </div>
+                    <div class="body"></div>
+                    <div class="arms">
+                        <div class="arm"></div>
+                        <div class="arm"></div>
+                    </div>
+                    <div class="legs">
+                        <div class="leg"></div>
+                        <div class="leg"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="plan-list">
+                <div class="category-header">所有计划</div>
+                <div id="planContainer"></div>
+            </div>
+
+            <div id="categoriesContainer">
+                <!-- 分类区域将由JavaScript动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化
+        function init() {
+            loadPlans();
+            loadCategories();
+            loadSlogan();
+            loadUserName();
+            // 设置颜色选择器初始值
+            document.getElementById('colorPicker').value = getComputedStyle(document.documentElement).getPropertyValue('--main-color').trim();
+            updateGreeting();
+            updateDateTime();
+            // 每秒更新时间
+            setInterval(updateDateTime, 1000);
+        }
+
+        // 更新日期和时间
+        function updateDateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString();
+            const dateStr = now.toLocaleDateString('zh-CN', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            });
+            
+            document.getElementById('timeDisplay').textContent = timeStr;
+            document.getElementById('dateDisplay').textContent = dateStr;
+            
+            // 更新问候语（每小时更新一次）
+            if (now.getMinutes() === 0 && now.getSeconds() === 0) {
+                updateGreeting();
+            }
+        }
+
+        // 更新问候语
+        function updateGreeting() {
+            const now = new Date();
+            const hours = now.getHours();
+            let greeting = '晚上好';
+            
+            if (hours < 12) {
+                greeting = '早上好';
+            } else if (hours < 14) {
+                greeting = '中午好';
+            } else if (hours < 18) {
+                greeting = '下午好';
+            }
+            
+            const userName = localStorage.getItem('userName') || '旅行者';
+            document.getElementById('greeting').textContent = `${greeting}，${userName}`;
+        }
+
+        // 更新用户名
+        function updateUserName() {
+            const userName = document.getElementById('userName').value.trim();
+            if (userName) {
+                localStorage.setItem('userName', userName);
+                updateGreeting();
+            }
+        }
+
+        // 加载用户名
+        function loadUserName() {
+            const userName = localStorage.getItem('userName');
+            if (userName) {
+                document.getElementById('userName').value = userName;
+            }
+        }
+
+        // 更新背景标语
+        function updateSlogan() {
+            const text = document.getElementById('sloganText').value;
+            const color = document.getElementById('sloganColor').value;
+            const size = document.getElementById('sloganSize').value;
+            const slogan = document.getElementById('backgroundSlogan');
+            
+            slogan.textContent = text;
+            slogan.style.color = color;
+            slogan.style.fontSize = size + 'px';
+            
+            // 保存设置
+            localStorage.setItem('sloganText', text);
+            localStorage.setItem('sloganColor', color);
+            localStorage.setItem('sloganSize', size);
+        }
+
+        // 加载背景标语设置
+        function loadSlogan() {
+            const text = localStorage.getItem('sloganText') || '高效工作';
+            const color = localStorage.getItem('sloganColor') || '#000000';
+            const size = localStorage.getItem('sloganSize') || '80';
+            
+            document.getElementById('sloganText').value = text;
+            document.getElementById('sloganColor').value = color;
+            document.getElementById('sloganSize').value = size;
+            
+            const slogan = document.getElementById('backgroundSlogan');
+            slogan.textContent = text;
+            slogan.style.color = color;
+            slogan.style.fontSize = size + 'px';
+        }
+
+        // 添加新计划
+        function addPlan() {
+            const planText = document.getElementById('newPlan').value.trim();
+            if (planText) {
+                const planId = 'plan-' + Date.now();
+                const planElement = createPlanElement(planId, planText, '');
+                document.getElementById('planContainer').appendChild(planElement);
+                document.getElementById('newPlan').value = '';
+                savePlans();
+            }
+        }
+
+        // 创建计划元素
+        function createPlanElement(id, text, note) {
+            const planElement = document.createElement('div');
+            planElement.className = 'plan-item';
+            planElement.id = id;
+            planElement.innerHTML = `
+                <div class="plan-text">${text}</div>
+                <div class="plan-note">${note || '暂无备注'}</div>
+                <input type="text" placeholder="添加备注..." 
+                       onchange="updateNote('${id}', this.value)"
+                       value="${note || ''}">
+                <div class="plan-actions">
+                    <button class="complete-btn" onclick="completePlan('${id}')">
+                        <span>完成</span>
+                    </button>
+                    <div>
+                        <button class="move-btn" onclick="showCategoryMenu('${id}')">移动到</button>
+                        <button class="delete-btn" onclick="deletePlan('${id}')">删除</button>
+                    </div>
+                </div>
+            `;
+            return planElement;
+        }
+
+        // 完成计划
+        function completePlan(planId) {
+            const planElement = document.getElementById(planId);
+            planElement.classList.add('completed');
+            
+            // 3秒后自动删除
+            setTimeout(() => {
+                deletePlan(planId);
+            }, 3000);
+        }
+
+        // 显示分类菜单
+        function showCategoryMenu(planId) {
+            const categories = document.querySelectorAll('.category');
+            if (categories.length === 0) {
+                alert('请先创建分类！');
+                return;
+            }
+            
+            // 移除现有的菜单
+            const existingMenu = document.getElementById('category-menu');
+            if (existingMenu) {
+                existingMenu.remove();
+            }
+            
+            // 创建选择菜单
+            const menu = document.createElement('div');
+            menu.id = 'category-menu';
+            menu.style.position = 'fixed';
+            menu.style.background = 'white';
+            menu.style.padding = '10px';
+            menu.style.borderRadius = '8px';
+            menu.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+            menu.style.zIndex = '1000';
+            
+            // 添加分类选项
+            categories.forEach(category => {
+                const categoryId = category.id;
+                const categoryName = category.querySelector('.category-header').textContent.split('删除分类')[0].trim();
+                
+                const button = document.createElement('button');
+                button.textContent = categoryName;
+                button.style.display = 'block';
+                button.style.width = '100%';
+                button.style.marginBottom = '5px';
+                button.onclick = function() {
+                    movePlanToCategory(planId, categoryId);
+                    menu.remove();
+                };
+                
+                menu.appendChild(button);
+            });
+            
+            // 添加取消按钮
+            const cancelButton = document.createElement('button');
+            cancelButton.textContent = '取消';
+            cancelButton.style.display = 'block';
+            cancelButton.style.width = '100%';
+            cancelButton.style.background = '#ff7675';
+            cancelButton.onclick = function() {
+                menu.remove();
+            };
+            
+            menu.appendChild(cancelButton);
+            
+            // 定位并显示菜单
+            const planElement = document.getElementById(planId);
+            const rect = planElement.getBoundingClientRect();
+            menu.style.top = (rect.bottom + 5) + 'px';
+            menu.style.left = rect.left + 'px';
+            
+            document.body.appendChild(menu);
+        }
+
+        // 移动计划到分类
+        function movePlanToCategory(planId, categoryId) {
+            const planElement = document.getElementById(planId);
+            const categoryElement = document.getElementById(categoryId);
+            if (planElement && categoryElement) {
+                const categoryContent = categoryElement.querySelector('.category-content');
+                categoryContent.appendChild(planElement);
+                savePlans();
+            }
+        }
+
+        // 添加新分类
+        function addCategory() {
+            const categoryName = document.getElementById('newCategory').value.trim();
+            if (categoryName) {
+                const categoryId = 'category-' + Date.now();
+                const categoryElement = document.createElement('div');
+                categoryElement.className = 'category';
+                categoryElement.id = categoryId;
+                categoryElement.innerHTML = `
+                    <div class="category-header">
+                        ${categoryName}
+                        <button class="delete-category" onclick="deleteCategory('${categoryId}')">删除分类</button>
+                    </div>
+                    <div class="category-content"></div>
+                `;
+                document.getElementById('categoriesContainer').appendChild(categoryElement);
+                document.getElementById('newCategory').value = '';
+                saveCategories();
+            }
+        }
+
+        // 更新备注
+        function updateNote(planId, note) {
+            savePlans();
+        }
+
+        // 删除计划
+        function deletePlan(planId) {
+            if (confirm('确定要删除这个计划吗？')) {
+                const planElement = document.getElementById(planId);
+                if (planElement) {
+                    planElement.remove();
+                    savePlans();
+                }
+            }
+        }
+
+        // 删除分类
+        function deleteCategory(categoryId) {
+            if (confirm('确定要删除这个分类吗？其中的计划将会回到"所有计划"中')) {
+                const categoryElement = document.getElementById(categoryId);
+                const plans = categoryElement.querySelectorAll('.plan-item');
+                
+                plans.forEach(plan => {
+                    document.getElementById('planContainer').appendChild(plan);
+                });
+                
+                categoryElement.remove();
+                saveCategories();
+            }
+        }
+
+        // 应用主题
+        function applyTheme() {
+            const color = document.getElementById('colorPicker').value;
+            document.documentElement.style.setProperty('--main-color', color);
+            // 保存主题设置
+            localStorage.setItem('themeColor', color);
+        }
+
+        // 保存计划
+        function savePlans() {
+            const plans = [];
+            document.querySelectorAll('.plan-item').forEach(plan => {
+                const textElement = plan.querySelector('.plan-text');
+                const noteInput = plan.querySelector('input[type="text"]');
+                
+                plans.push({
+                    id: plan.id,
+                    text: textElement.textContent,
+                    note: noteInput.value,
+                    category: plan.closest('.category') ? plan.closest('.category').id : null,
+                    completed: plan.classList.contains('completed')
+                });
+            });
+            localStorage.setItem('plans', JSON.stringify(plans));
+        }
+
+        // 加载计划
+        function loadPlans() {
+            const savedPlans = JSON.parse(localStorage.getItem('plans')) || [];
+            savedPlans.forEach(plan => {
+                const planElement = createPlanElement(plan.id, plan.text, plan.note);
+                
+                if (plan.completed) {
+                    planElement.classList.add('completed');
+                }
+                
+                if (plan.category && document.getElementById(plan.category)) {
+                    document.querySelector(`#${plan.category} .category-content`).appendChild(planElement);
+                } else {
+                    document.getElementById('planContainer').appendChild(planElement);
+                }
+            });
+        }
+
+        // 保存分类
+        function saveCategories() {
+            const categories = [];
+            document.querySelectorAll('.category').forEach(category => {
+                categories.push({
+                    id: category.id,
+                    name: category.querySelector('.category-header').textContent.split('真的要把我删了吗？')[0].trim()
+                });
+            });
+            localStorage.setItem('categories', JSON.stringify(categories));
+        }
+
+        // 加载分类
+        function loadCategories() {
+            const savedCategories = JSON.parse(localStorage.getItem('categories')) || [];
+            savedCategories.forEach(cat => {
+                const categoryElement = document.createElement('div');
+                categoryElement.className = 'category';
+                categoryElement.id = cat.id;
+                categoryElement.innerHTML = `
+                    <div class="category-header">
+                        ${cat.name}
+                        <button class="delete-category" onclick="deleteCategory('${cat.id}')">删除分类</button>
+                    </div>
+                    <div class="category-content"></div>
+                `;
+                document.getElementById('categoriesContainer').appendChild(categoryElement);
+            });
+        }
+
+        // 加载保存的主题色
+        const savedColor = localStorage.getItem('themeColor');
+        if (savedColor) {
+            document.documentElement.style.setProperty('--main-color', savedColor);
+        }
+
+        // 页面加载时初始化
+        window.onload = init;
+    </script>
+</body>
+</html>
